@@ -28,4 +28,18 @@ router.post("/register", upload.single("profile_pic"), async (req, res) =>{
     return res.status(201).send({ status:"done!!", message:"data sucessfully added", userData, token})
 })  
 
+router.post("/login",async (req, res) => {
+    let user = await User.findOne({email:req.body.email})
+    console.log(user.password)
+    if(!user) return res.status(400).send({status:"failed", message:"User not register"});
+
+    let check = user.checkPassword(req.body.password);
+
+    if(!check) return res.status(400).send({status:"failed", message:"pass is wrong"});
+
+    let token = newToken(user);
+
+    return res.status(200).send({user, token});
+
+})
 module.exports = router
